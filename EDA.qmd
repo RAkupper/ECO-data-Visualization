@@ -1,5 +1,119 @@
+---
+format:
+    html:
+        code-fold: true
+        embed-resources: true
+        self-contained: true
+---
+
+## Data Introduction
+Our dataset is from three Swiss households. We include the plug data for all the electric appliance in the dataset across the three households and also the power all phases data across them for later visualization and analysis.
+
+
+## Data-Science Questions
+1. which household consume the most, and the usage for each appliance?
+2. which appliance consume the most during the evening (6pm-9pm) for each household?
+3. During the summer and winter, are there any difference between the appliance usage for household 
+
+
+
+
+## Data preprocessing
+```{python}
 import numpy as np
 import pandas as pd
+from pathlib import Path
+```
+
+```{python}
+def process_plug_file(filepath, house, appliance):
+    df = pd.read_csv(filepath)
+    df = df.replace(-1, np.nan) # dealing with missing val
+    df = df.interpolate(method='linear')
+    #print(df.dtypes)
+    # df = pd.to_numeric(df errors='coerce')
+    date = pd.to_datetime(filepath.stem[:10]) # get date from filename
+    df['datetime'] = pd.date_range( # create datetime index
+        start=date,
+        periods=len(df),
+        freq="s"
+    ) 
+    df = df.set_index("datetime")
+    csp = df.columns[-1]
+    df[csp] = pd.to_numeric(df[csp], errors="coerce")
+    hourly = df[csp].resample("1h").sum() # unit conversions resampling
+    hourly = hourly / 3600000 # convert to kWh
+    result = pd.DataFrame({
+        "house": house,
+        "appliance": appliance,
+        "datetime": hourly.index,
+        "consumption_kWh": hourly.values
+    })
+    print(result)
+
+    return result
+
+## process smart meter data
+def process_sm_file(filepath, house):
+    df = pd.read_csv(filepath)
+    df = df.replace(-1, np.nan) 
+    date = pd.to_datetime(filepath.stem[:10])
+    df['datetime'] = pd.date_range(
+        start=date,
+        periods=len(df),
+        freq="s"
+    )
+    df = df.set_index("datetime")
+    total_csp = df.columns[0]
+    df[total_csp] = pd.to_numeric(df[total_csp], errors="coerce")
+    hourly = df[total_csp].resample("1h").sum() / 3600000
+    result = pd.DataFrame({
+            "house": house,
+            "datetime": hourly.index,
+            "power_all_phases_kWh": hourly.values
+        })
+
+    return result
+
+```
 
 
-df 
+``` {python}
+data_path = Path('data')
+output_path = Path('processed_data')
+plug_df = []
+sm_df = []
+
+for folder in data_path.iterdir():
+    if not folder.is_dir():
+        continue
+    house_name = folder.name.split('_')[0]
+    # plug folders
+    if not folder.name.endswith("sm"):
+        for f in folder.iterdir():
+            if not f.is_dir():
+                continue
+            appliance_name = f.name
+            for csvfile in sorted(f.glob("*.csv")):
+                result = process_plug_file(
+                    csvfile,
+                    house_name,
+                    appliance_name
+                )
+                plug_df.append(result)
+            
+    # smart meter folders
+    elif folder.name.endswith("sm"):
+        for csvfile in sorted(folder.glob("*.csv")):
+            result = process_sm_file(
+                csvfile,
+                house_name
+            )
+            sm_df.append(result)
+
+plug_df = pd.concat(plug_df)
+sm_df = pd.concat(sm_df)
+
+plug_df.to_csv(output_path/'plug_data.csv',index=False)
+sm_df.to_csv(output_path/'sm_data.csv',index=False)
+```

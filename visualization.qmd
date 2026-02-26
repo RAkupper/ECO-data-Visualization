@@ -128,6 +128,7 @@ The first visualization shows the overall energy usage across the households:
 ---
 
 The second visualization uses a `bar chart` to show average hourly appliance consumption. 
+
 * The `slider` allows the user to select a specific hour of the day (0–23h).
 
 * The bar chart updates to show appliance consumption during that hour. 

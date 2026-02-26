@@ -1,12 +1,12 @@
 
-#### **1. Data Description**
+### 1. Data Description
 
 The data used in this project comes from the **ECO (Electricity Consumption and Occupancy) dataset**. This analysis focuses on plug data for all appliances in the dataset and smart meter data from Households 4, 5, and 6.The plug data records individual appliance consumption, while the smart meter data records total household consumption.
 
 The original data was sampled at a frequency of 1 Hz, meaning power consumption was recorded once per second in **watts (W)**. This results in **86,400 measurements per day**. The dataset covers the period from **June 27 to January 31**, although some days and individual values are missing. Missing values are stored as −1 in the original dataset.<br>
 
 
-#### **2. Research Questions**
+### 2. Research Questions
 
 For the given households and their energy usage, we are curious about these questions:
 
@@ -17,7 +17,7 @@ For the given households and their energy usage, we are curious about these ques
 3. How does entertainment appliance usage differ between households over time?<br>
 
 
-#### **3. Data Preparation**
+### 3. Data Preparation
 
 Missing values were replaced using **linear interpolation**, since electricity consumption typically changes gradually over time.
 
@@ -140,7 +140,7 @@ plug_df.to_csv(output_path/'plug_data.csv',index=False)
 sm_df.to_csv(output_path/'sm_data.csv',index=False)
 ```
 
-#### **4. EDA for Energy Consumption**
+### 4. EDA for Energy Consumption
 
 ```{python}
 plug_data = pd.read_csv('processed_data/plug_data.csv')

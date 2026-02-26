@@ -3,6 +3,7 @@ format:
     html:
         code-fold: true
         embed-resources: true
+        toc: true
         self-contained: true
 ---
 # Homework-2: Data Visualization for ECO Dataset
@@ -10,7 +11,7 @@ format:
 
 {{< include EDA.qmd >}}
 
-#### **5. Data Visualization Design and Storytelling**
+### 5. Data Visualization Design and Storytelling
 
 All visualizations were created using *Altair* because it provides strong support for interactive and linked visualizations.
 
@@ -30,7 +31,7 @@ plug_df = pd.read_csv('processed_data/plug_data.csv')
 sm_df = pd.read_csv('processed_data/sm_data.csv')
 ```
 
-##### **5.1 Total and Daily Energy Consumption by Household**
+#### **5.1 Total and Daily Energy Consumption by Household**
 
 ---
 
@@ -122,7 +123,7 @@ The first visualization shows the overall energy usage across the households:
 * Household 6 shows consistently lower consumption, partly due to missing data.<br>
 
 
-##### **5.2 Average Appliance Energy Consumption by Household and Hour**
+#### **5.2 Average Appliance Energy Consumption by Household and Hour**
 
 ---
 
@@ -222,7 +223,7 @@ chart
 * Household 6 has lower overall consumption, with most usage coming from essential appliances and some evening entertainment usage.<br>
 
 
-##### **5.3 Daily Entertainment Energy Consumption by Household (Jun-Nov)**
+#### **5.3 Daily Entertainment Energy Consumption by Household (Jun-Nov)**
 
 ---
 

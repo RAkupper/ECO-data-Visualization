@@ -2215,10 +2215,22 @@ var requirejs,require,define;(function(global,setTimeout){var req,s,head,baseEle
 
 </head>
 
-<body class="fullcontent quarto-light">
+<body class="quarto-light">
 
 <div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
-
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+  <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#data-description" id="toc-data-description" class="nav-link active" data-scroll-target="#data-description">1. Data Description</a></li>
+  <li><a href="#research-questions" id="toc-research-questions" class="nav-link" data-scroll-target="#research-questions">2. Research Questions</a></li>
+  <li><a href="#data-preparation" id="toc-data-preparation" class="nav-link" data-scroll-target="#data-preparation">3. Data Preparation</a></li>
+  <li><a href="#eda-for-energy-consumption" id="toc-eda-for-energy-consumption" class="nav-link" data-scroll-target="#eda-for-energy-consumption">4. EDA for Energy Consumption</a></li>
+  <li><a href="#data-visualization-design-and-storytelling" id="toc-data-visualization-design-and-storytelling" class="nav-link" data-scroll-target="#data-visualization-design-and-storytelling">5. Data Visualization Design and Storytelling</a></li>
+  </ul>
+</nav>
+</div>
 <main class="content" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
@@ -2240,13 +2252,13 @@ var requirejs,require,define;(function(global,setTimeout){var req,s,head,baseEle
 </header>
 
 
-<section id="data-description" class="level4">
-<h4 class="anchored" data-anchor-id="data-description"><strong>1. Data Description</strong></h4>
+<section id="data-description" class="level3">
+<h3 class="anchored" data-anchor-id="data-description">1. Data Description</h3>
 <p>The data used in this project comes from the <strong>ECO (Electricity Consumption and Occupancy) dataset</strong>. This analysis focuses on plug data for all appliances in the dataset and smart meter data from Households 4, 5, and 6.The plug data records individual appliance consumption, while the smart meter data records total household consumption.</p>
 <p>The original data was sampled at a frequency of 1 Hz, meaning power consumption was recorded once per second in <strong>watts (W)</strong>. This results in <strong>86,400 measurements per day</strong>. The dataset covers the period from <strong>June 27 to January 31</strong>, although some days and individual values are missing. Missing values are stored as −1 in the original dataset.<br></p>
 </section>
-<section id="research-questions" class="level4">
-<h4 class="anchored" data-anchor-id="research-questions"><strong>2. Research Questions</strong></h4>
+<section id="research-questions" class="level3">
+<h3 class="anchored" data-anchor-id="research-questions">2. Research Questions</h3>
 <p>For the given households and their energy usage, we are curious about these questions:</p>
 <ol type="1">
 <li><p>Which household has the highest total electricity consumption, and how does their daily consumption change over time?</p></li>
@@ -2254,12 +2266,12 @@ var requirejs,require,define;(function(global,setTimeout){var req,s,head,baseEle
 <li><p>How does entertainment appliance usage differ between households over time?<br></p></li>
 </ol>
 </section>
-<section id="data-preparation" class="level4">
-<h4 class="anchored" data-anchor-id="data-preparation"><strong>3. Data Preparation</strong></h4>
+<section id="data-preparation" class="level3">
+<h3 class="anchored" data-anchor-id="data-preparation">3. Data Preparation</h3>
 <p>Missing values were replaced using <strong>linear interpolation</strong>, since electricity consumption typically changes gradually over time.</p>
 <p>The data was then <strong>resampled from 1-second intervals to hourly intervals</strong>. During this process, power measurements in watts were converted to energy consumption in <strong>kilowatt-hours (kWh)</strong>, which is more suitable for comparing energy usage.</p>
 <p>All plug data was combined into a long-format table containing <code>household</code>, <code>appliance</code>, <code>datetime</code>, and <code>energy consumption</code>. Smart meter data was processed similarly to create a table containing <code>household</code>, <code>datetime</code>, and <code>total energy consumption</code>.</p>
-<div id="aea7f140" class="cell" data-execution_count="1">
+<div id="e40258e3" class="cell" data-execution_count="1">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
@@ -2267,7 +2279,7 @@ var requirejs,require,define;(function(global,setTimeout){var req,s,head,baseEle
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pathlib <span class="im">import</span> Path</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
-<div id="d3bd12ea" class="cell" data-execution_count="2">
+<div id="25c8c07e" class="cell" data-execution_count="2">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> process_plug_file(filepath, house, appliance):</span>
@@ -2317,7 +2329,7 @@ var requirejs,require,define;(function(global,setTimeout){var req,s,head,baseEle
 <span id="cb2-45"><a href="#cb2-45" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> result</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
-<div id="0303a4a1" class="cell" data-execution_count="3">
+<div id="ed2bee44" class="cell" data-execution_count="3">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>data_path <span class="op">=</span> Path(<span class="st">&#39;data&#39;</span>)</span>
@@ -2376,9 +2388,9 @@ var requirejs,require,define;(function(global,setTimeout){var req,s,head,baseEle
 </details>
 </div>
 </section>
-<section id="eda-for-energy-consumption" class="level4">
-<h4 class="anchored" data-anchor-id="eda-for-energy-consumption"><strong>4. EDA for Energy Consumption</strong></h4>
-<div id="1a3a58dd" class="cell" data-execution_count="4">
+<section id="eda-for-energy-consumption" class="level3">
+<h3 class="anchored" data-anchor-id="eda-for-energy-consumption">4. EDA for Energy Consumption</h3>
+<div id="eecde3a4" class="cell" data-execution_count="4">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>plug_data <span class="op">=</span> pd.read_csv(<span class="st">&#39;processed_data/plug_data.csv&#39;</span>)</span>
@@ -2457,10 +2469,10 @@ house
 </div>
 </div>
 </section>
-<section id="data-visualization-design-and-storytelling" class="level4">
-<h4 class="anchored" data-anchor-id="data-visualization-design-and-storytelling"><strong>5. Data Visualization Design and Storytelling</strong></h4>
+<section id="data-visualization-design-and-storytelling" class="level3">
+<h3 class="anchored" data-anchor-id="data-visualization-design-and-storytelling">5. Data Visualization Design and Storytelling</h3>
 <p>All visualizations were created using <em>Altair</em> because it provides strong support for interactive and linked visualizations.</p>
-<div id="2b0c5be3" class="cell" data-execution_count="5">
+<div id="b01d9acf" class="cell" data-execution_count="5">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> altair <span class="im">as</span> alt</span>
@@ -2478,8 +2490,8 @@ house
 <span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>sm_df <span class="op">=</span> pd.read_csv(<span class="st">&#39;processed_data/sm_data.csv&#39;</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
-<section id="total-and-daily-energy-consumption-by-household" class="level5">
-<h5 class="anchored" data-anchor-id="total-and-daily-energy-consumption-by-household"><strong>5.1 Total and Daily Energy Consumption by Household</strong></h5>
+<section id="total-and-daily-energy-consumption-by-household" class="level4">
+<h4 class="anchored" data-anchor-id="total-and-daily-energy-consumption-by-household"><strong>5.1 Total and Daily Energy Consumption by Household</strong></h4>
 <hr>
 <p>The first visualization combines a <code>bar chart</code> and a <code>time series line chart</code>.</p>
 <ul>
@@ -2487,7 +2499,7 @@ house
 <li><p>The line chart shows daily energy consumption over time.</p></li>
 <li><p>The two charts are <strong>linked</strong> using <code>selection</code> interaction: when a household is selected, its data is highlighted while the others are faded.</p></li>
 </ul>
-<div id="5c06aa2d" class="cell" data-execution_count="6">
+<div id="e0bfb7d7" class="cell" data-execution_count="6">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># bar chart </span></span>
@@ -2559,25 +2571,25 @@ house
 <span id="cb7-67"><a href="#cb7-67" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb7-68"><a href="#cb7-68" aria-hidden="true" tabindex="-1"></a>chart</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
-<div class="cell-output cell-output-display" data-execution_count="82">
+<div class="cell-output cell-output-display" data-execution_count="4">
 
 <style>
-#altair-viz-50107c44512c48b1bf3301ee55175c24.vega-embed {
+#altair-viz-4498435590d24f02bf8c5c18e0c40068.vega-embed {
 width: 100%;
 display: flex;
 }
-#altair-viz-50107c44512c48b1bf3301ee55175c24.vega-embed details,
-#altair-viz-50107c44512c48b1bf3301ee55175c24.vega-embed details summary {
+#altair-viz-4498435590d24f02bf8c5c18e0c40068.vega-embed details,
+#altair-viz-4498435590d24f02bf8c5c18e0c40068.vega-embed details summary {
 position: relative;
 }
 </style>
-<div id="altair-viz-50107c44512c48b1bf3301ee55175c24"></div>
+<div id="altair-viz-4498435590d24f02bf8c5c18e0c40068"></div>
 <script type="text/javascript">
   var VEGA_DEBUG = (typeof VEGA_DEBUG == "undefined") ? {} : VEGA_DEBUG;
   (function(spec, embedOpt){
     let outputDiv = document.currentScript.previousElementSibling;
-    if (outputDiv.id !== "altair-viz-50107c44512c48b1bf3301ee55175c24") {
-      outputDiv = document.getElementById("altair-viz-50107c44512c48b1bf3301ee55175c24");
+    if (outputDiv.id !== "altair-viz-4498435590d24f02bf8c5c18e0c40068") {
+      outputDiv = document.getElementById("altair-viz-4498435590d24f02bf8c5c18e0c40068");
     }
 
     const paths = {
@@ -2636,15 +2648,15 @@ position: relative;
 <li><p>Household 6 shows consistently lower consumption, partly due to missing data.<br></p></li>
 </ul>
 </section>
-<section id="average-appliance-energy-consumption-by-household-and-hour" class="level5">
-<h5 class="anchored" data-anchor-id="average-appliance-energy-consumption-by-household-and-hour"><strong>5.2 Average Appliance Energy Consumption by Household and Hour</strong></h5>
+<section id="average-appliance-energy-consumption-by-household-and-hour" class="level4">
+<h4 class="anchored" data-anchor-id="average-appliance-energy-consumption-by-household-and-hour"><strong>5.2 Average Appliance Energy Consumption by Household and Hour</strong></h4>
 <hr>
 <p>The second visualization uses a <code>bar chart</code> to show average hourly appliance consumption. * The <code>slider</code> allows the user to select a specific hour of the day (0–23h).</p>
 <ul>
 <li><p>The bar chart updates to show appliance consumption during that hour.</p></li>
 <li><p>In addition, household selection is controlled using the <code>legend</code>. This allows users to select one household for analysis.</p></li>
 </ul>
-<div id="25d5c7c6" class="cell" data-execution_count="7">
+<div id="6531fa92" class="cell" data-execution_count="7">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>zoom2 <span class="op">=</span> alt.selection_interval(bind<span class="op">=</span><span class="st">&#39;scales&#39;</span>)</span>
@@ -2725,25 +2737,25 @@ position: relative;
 <span id="cb8-76"><a href="#cb8-76" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb8-77"><a href="#cb8-77" aria-hidden="true" tabindex="-1"></a>chart</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
-<div class="cell-output cell-output-display" data-execution_count="83">
+<div class="cell-output cell-output-display" data-execution_count="5">
 
 <style>
-#altair-viz-ee239d5eeb2046209dc7f25e9fc46238.vega-embed {
+#altair-viz-14a6350c662b46358013f29f42ab02a4.vega-embed {
 width: 100%;
 display: flex;
 }
-#altair-viz-ee239d5eeb2046209dc7f25e9fc46238.vega-embed details,
-#altair-viz-ee239d5eeb2046209dc7f25e9fc46238.vega-embed details summary {
+#altair-viz-14a6350c662b46358013f29f42ab02a4.vega-embed details,
+#altair-viz-14a6350c662b46358013f29f42ab02a4.vega-embed details summary {
 position: relative;
 }
 </style>
-<div id="altair-viz-ee239d5eeb2046209dc7f25e9fc46238"></div>
+<div id="altair-viz-14a6350c662b46358013f29f42ab02a4"></div>
 <script type="text/javascript">
   var VEGA_DEBUG = (typeof VEGA_DEBUG == "undefined") ? {} : VEGA_DEBUG;
   (function(spec, embedOpt){
     let outputDiv = document.currentScript.previousElementSibling;
-    if (outputDiv.id !== "altair-viz-ee239d5eeb2046209dc7f25e9fc46238") {
-      outputDiv = document.getElementById("altair-viz-ee239d5eeb2046209dc7f25e9fc46238");
+    if (outputDiv.id !== "altair-viz-14a6350c662b46358013f29f42ab02a4") {
+      outputDiv = document.getElementById("altair-viz-14a6350c662b46358013f29f42ab02a4");
     }
 
     const paths = {
@@ -2802,8 +2814,8 @@ position: relative;
 <li><p>Household 6 has lower overall consumption, with most usage coming from essential appliances and some evening entertainment usage.<br></p></li>
 </ul>
 </section>
-<section id="daily-entertainment-energy-consumption-by-household-jun-nov" class="level5">
-<h5 class="anchored" data-anchor-id="daily-entertainment-energy-consumption-by-household-jun-nov"><strong>5.3 Daily Entertainment Energy Consumption by Household (Jun-Nov)</strong></h5>
+<section id="daily-entertainment-energy-consumption-by-household-jun-nov" class="level4">
+<h4 class="anchored" data-anchor-id="daily-entertainment-energy-consumption-by-household-jun-nov"><strong>5.3 Daily Entertainment Energy Consumption by Household (Jun-Nov)</strong></h4>
 <hr>
 <p>The third visualization combines a <code>heatmap</code> and a <code>time series chart</code> to show entertainment energy consumption from June to November.</p>
 <ul>
@@ -2811,7 +2823,7 @@ position: relative;
 <li><p>The time series chart below shows the same data as lines, making trends easier to interpret.</p></li>
 <li><p>These charts are <strong>linked</strong> using <code>hover</code> interaction: When the user hovers over a household in the heatmap, the corresponding line in the time series is highlighted while the others are faded.</p></li>
 </ul>
-<div id="6d310e86" class="cell" data-execution_count="8">
+<div id="d3fe69fe" class="cell" data-execution_count="8">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>hover <span class="op">=</span> alt.selection_point(</span>
@@ -2900,25 +2912,25 @@ position: relative;
 <span id="cb9-84"><a href="#cb9-84" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb9-85"><a href="#cb9-85" aria-hidden="true" tabindex="-1"></a>chart</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
-<div class="cell-output cell-output-display" data-execution_count="84">
+<div class="cell-output cell-output-display" data-execution_count="6">
 
 <style>
-#altair-viz-c014d6fdcb3b470dbbcec87448827b2d.vega-embed {
+#altair-viz-e8c9d75278dd4dea991182e89449c586.vega-embed {
 width: 100%;
 display: flex;
 }
-#altair-viz-c014d6fdcb3b470dbbcec87448827b2d.vega-embed details,
-#altair-viz-c014d6fdcb3b470dbbcec87448827b2d.vega-embed details summary {
+#altair-viz-e8c9d75278dd4dea991182e89449c586.vega-embed details,
+#altair-viz-e8c9d75278dd4dea991182e89449c586.vega-embed details summary {
 position: relative;
 }
 </style>
-<div id="altair-viz-c014d6fdcb3b470dbbcec87448827b2d"></div>
+<div id="altair-viz-e8c9d75278dd4dea991182e89449c586"></div>
 <script type="text/javascript">
   var VEGA_DEBUG = (typeof VEGA_DEBUG == "undefined") ? {} : VEGA_DEBUG;
   (function(spec, embedOpt){
     let outputDiv = document.currentScript.previousElementSibling;
-    if (outputDiv.id !== "altair-viz-c014d6fdcb3b470dbbcec87448827b2d") {
-      outputDiv = document.getElementById("altair-viz-c014d6fdcb3b470dbbcec87448827b2d");
+    if (outputDiv.id !== "altair-viz-e8c9d75278dd4dea991182e89449c586") {
+      outputDiv = document.getElementById("altair-viz-e8c9d75278dd4dea991182e89449c586");
     }
 
     const paths = {

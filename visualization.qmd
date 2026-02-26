@@ -1,0 +1,333 @@
+---
+format:
+    html:
+        code-fold: true
+        embed-resources: true
+        self-contained: true
+---
+# Homework-2: Data Visualization for ECO Dataset
+
+
+{{< include EDA.qmd >}}
+
+#### **5. Data Visualization Design and Storytelling**
+
+All visualizations were created using *Altair* because it provides strong support for interactive and linked visualizations.
+
+```{python}
+import altair as alt
+import plotly.graph_objects as go
+import plotly.express as pe
+import pandas as pd
+
+# alt.data_transformers.enable("json")
+# alt.renderers.set_embed_options(actions=False)
+# alt.data_transformers.enable("json") 
+# alt.data_transformers.consolidate_datasets = False 
+alt.data_transformers.disable_max_rows()
+
+plug_df = pd.read_csv('processed_data/plug_data.csv')
+sm_df = pd.read_csv('processed_data/sm_data.csv')
+```
+
+##### **5.1 Total and Daily Energy Consumption by Household**
+
+---
+
+The first visualization combines a `bar chart` and a `time series line chart`. 
+
+* The bar chart shows total energy consumption for each household. 
+
+* The line chart shows daily energy consumption over time. 
+
+* The two charts are **linked** using `selection` interaction: when a household is selected, its data is highlighted while the others are faded. 
+
+```{python}
+# bar chart 
+house_select = alt.selection_point(fields=["house"], empty="Random")
+zoom1 = alt.selection_interval(bind='scales')
+
+bar = (
+    alt.Chart(sm_df)
+    .mark_bar()
+    .encode(
+        x=alt.X("house:N", title="Household",axis=alt.Axis(titleFontSize=14)),
+        y=alt.Y("sum(power_all_phases_kWh):Q", title="Total Energy Consumption (kWh)"),
+        color=alt.condition(
+            house_select,
+            alt.Color("house:N", legend=None),
+            alt.value("lightgray")
+        ),
+        tooltip=[
+            alt.Tooltip("house:N"),
+            alt.Tooltip("sum(power_all_phases_kWh):Q", title="Total kWh")
+        ]
+    )
+    .add_params(house_select)
+    .properties(width=275, height=300)
+)
+
+line = (
+    alt.Chart(sm_df)
+    .mark_line()
+    .encode(
+        x=alt.X(
+            "yearmonthdate(datetime):T",
+            title="Date"
+        ),
+        y=alt.Y(
+            "sum(power_all_phases_kWh):Q",
+            title="Daily Total Energy Consumption (kWh)"
+        ),
+        color=alt.condition(
+            house_select,
+            alt.Color("house:N", legend=None),
+            alt.value("lightgray")
+        ),
+        tooltip=[
+            "house:N",
+            alt.Tooltip("yearmonthdate(datetime):T", title="Date"),
+            alt.Tooltip("sum(power_all_phases_kWh):Q", 
+            title='Daily Total kWh', format=".2f")
+        ]
+    )
+    .add_params(zoom1)
+    .properties(width=275, height=300)
+)
+
+chart = (bar | line).configure_axis(
+    titleFontSize=14,
+    labelFontSize=13,
+    titlePadding=12
+).configure_title(
+    fontSize=16
+).properties(
+    spacing=60,
+    padding=20,
+    title={
+        'text':"Total and Daily Energy Consumption by Household",
+        'offset':20
+    })
+
+
+chart
+```
+
+The first visualization shows the overall energy usage across the households:
+
+* Household 4 has the highest total electricity consumption, while Household 6 has the lowest.
+
+* Household 4 and Household 5 have similar consumption during the summer, but Household 4’s consumption increases significantly in late fall and early winter.
+
+* Household 6 shows consistently lower consumption, partly due to missing data.<br>
+
+
+##### **5.2 Average Appliance Energy Consumption by Household and Hour**
+
+---
+
+The second visualization uses a `bar chart` to show average hourly appliance consumption. 
+* The `slider` allows the user to select a specific hour of the day (0–23h).
+
+* The bar chart updates to show appliance consumption during that hour. 
+
+* In addition, household selection is controlled using the `legend`. This allows users to select one household for analysis. 
+
+```{python}
+zoom2 = alt.selection_interval(bind='scales')
+
+plug_df['datetime'] = pd.to_datetime(plug_df['datetime'])
+
+plug_df['hour'] = plug_df['datetime'].dt.hour
+
+avg_df = (
+    plug_df
+    .groupby(['house', 'appliance', 'hour'])['consumption_kWh']
+    .mean()
+    .reset_index()
+)
+
+hour_slider = alt.binding_range(
+    min=0,
+    max=23,
+    step=1,
+    name='Hour of the Day (h): '
+)
+
+hour_select = alt.selection_point(
+    fields=['hour'],
+    bind=hour_slider,
+    value=12   
+)
+
+house_select = alt.selection_point(
+    fields=['house'],
+    bind='legend',
+    value=[{'house': avg_df['house'].unique()[0]}] 
+)
+
+chart = (
+    alt.Chart(avg_df)
+    .mark_bar()
+    .encode(
+        x=alt.X('appliance:N', title='Appliance'),
+        y=alt.Y('consumption_kWh:Q', title='Hourly Average Consumption (kW)',stack=None),
+       color=alt.Color(
+        'house:N',
+        title='Household',
+        legend=alt.Legend(
+        orient='top',
+        direction='horizontal',
+        titleFontSize=14,
+        labelFontSize=14,
+        symbolSize=200
+    )
+),
+        opacity=alt.condition(
+            house_select,
+            alt.value(1),
+            alt.value(0)
+),  
+        tooltip=[
+            alt.Tooltip('house:N'),
+            alt.Tooltip('appliance:N'),
+            alt.Tooltip('hour:Q'),
+            alt.Tooltip('consumption_kWh:Q', title='Hourly Average kWh',format='.3f')
+        ]
+    ).add_params(hour_select, house_select,zoom2)
+    .transform_filter(hour_select)# .transform_filter(house_select)
+    .configure_axis(
+        titleFontSize=14,
+        labelFontSize=13,
+        titlePadding=12
+    ).configure_title(
+        fontSize=16)
+    .properties(
+        width=600,
+        height=300,
+        padding=20,
+        title={'text':'Average Appliance Energy Consumption by Household and Hour',
+        'offset':20})
+)
+
+chart
+```
+
+<br>The second visualization reveals **appliance usage patterns** throughout the day
+
+* Household 4 shows consistently high energy usage from appliances such as the freezer, which runs continuously. Kitchen appliances and microwaves show peaks around typical meal times. Entertainment devices show increased usage in the afternoon and evening after lunch and dinner.
+
+* Household 5 shows more balanced appliance usage, with peaks from coffee machines and microwaves during the breakfast time, and entertainment devices at expected times.
+
+* Household 6 has lower overall consumption, with most usage coming from essential appliances and some evening entertainment usage.<br>
+
+
+##### **5.3 Daily Entertainment Energy Consumption by Household (Jun-Nov)**
+
+---
+
+The third visualization combines a `heatmap` and a `time series chart` to show entertainment energy consumption from June to November. 
+
+* The heatmap uses color intensity to represent daily consumption, making it easy to identify patterns and variations over time. 
+
+* The time series chart below shows the same data as lines, making trends easier to interpret. 
+
+* These charts are **linked** using `hover` interaction: When the user hovers over a household in the heatmap, the corresponding line in the time series is highlighted while the others are faded. 
+
+```{python}
+hover = alt.selection_point(
+    fields=['house'],
+    on='mouseover',
+    clear='mouseout'
+)
+
+zoom3 = alt.selection_interval(bind='scales')
+
+entertainment_df = plug_df[
+    (plug_df['appliance'] == 'Entertainment') &
+    (plug_df['datetime'].dt.month >= 6) &
+    (plug_df['datetime'].dt.month <= 11)
+].copy()
+
+heatmap = (
+    alt.Chart(entertainment_df)
+    .mark_rect()
+    .encode(
+        x=alt.X('yearmonthdate(datetime):T', title='Date'),
+        y=alt.Y(
+            'house:N',
+            title='Household'
+        ),
+
+        color=alt.Color(
+            'sum(consumption_kWh):Q',
+            title=['Energy','Consumption (kWh)'],
+            scale=alt.Scale(scheme='inferno'),
+            legend=alt.Legend(orient='right')
+        ),
+        tooltip=[
+            alt.Tooltip('house:N', title='House'),
+            alt.Tooltip('yearmonthdate(datetime):T', title='Date'),
+            alt.Tooltip('sum(consumption_kWh):Q', title='Daily Total kWh', format='.3f')
+        ]
+    )
+    .properties(
+        width=525,
+        height=250,
+        title='Heatmap for Daily Entertainment Energy Consumption by Household (Jun-Nov)'
+    ).add_params(hover)
+)
+
+line_chart = (
+    alt.Chart(entertainment_df)
+    .mark_line(size=2)
+    .encode(
+        x=alt.X('yearmonthdate(datetime):T', title='Date'),
+
+        y=alt.Y(
+            'sum(consumption_kWh):Q',
+            title='Daily Consumption (kWh)'
+        ),
+
+        color=alt.Color('house:N', legend=None),
+
+        tooltip=[
+            alt.Tooltip('house:N', title='House'),
+            alt.Tooltip('yearmonthdate(datetime):T', title='Date'),
+            alt.Tooltip('sum(consumption_kWh):Q', title='Daily Total kWh', format='.3f')
+        ],
+     
+        opacity=alt.condition(
+            hover,
+            alt.value(1),
+            alt.value(0.2)
+        )
+    )
+    .properties(width=600, 
+                height=250,
+               title='Time Series Plot for Daily Entertainment Energy Consumption by Household (Jun-Nov)')
+).add_params(zoom3)
+
+chart = (heatmap & line_chart).configure_axis(
+        titleFontSize=14,
+        labelFontSize=13,
+        titlePadding=12
+    ).configure_title(
+        fontSize=16
+    ).properties(
+        padding=20
+    ).resolve_scale(x='shared')
+
+
+chart
+```
+
+The third visualization highlights **differences in entertainment usage** between households. 
+
+* Household 4 shows more consistent daily usage, indicating regular entertainment activity. 
+
+* Household 5 shows more irregular usage, with alternating periods of higher and lower consumption. 
+
+* Household 6 has lower overall entertainment consumption. 
+
+Across all households, entertainment usage is generally concentrated in the evening, suggesting similar daily routines.

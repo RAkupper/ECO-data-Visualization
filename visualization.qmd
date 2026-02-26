@@ -5,6 +5,7 @@ format:
         embed-resources: true
         toc: true
         self-contained: true
+        page-layout: full
 ---
 # Homework-2: Data Visualization for ECO Dataset
 
